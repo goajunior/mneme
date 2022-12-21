@@ -260,9 +260,9 @@ def savePDInfo(fileName, PD, PDm, areaElements, elements):
         i = 0
         for data_slice in tmp:
             type(head[i])
-            f.write(head[i])
+            f.write(head[i].encode())
             np.savetxt(f, data_slice, delimiter=";", newline=";", fmt=fmt[i])
-            f.write("\n")
+            f.write("\n".encode())
             i = i + 1
 
 
