@@ -983,7 +983,7 @@ for perAgreggate in percents:
 
     perDescription = formatFilePercent(perAgreggate)
 
-    dirData2 = os.path.join(os.getcwd(), "%sp" % formatFilePercent(perAgreggate))
+    dirData2 = os.path.join(os.getcwd(), "pre-termico")
     if not os.path.exists(dirData2):
         os.makedirs(dirData2)
 
