@@ -128,3 +128,12 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .DS_Store
+data2d/stones2DA1C1-18,0.dgibi-gran.txt
+data2d/stones2DA1C1-18,0.dgibi-rawdep.bin
+*.bin
+data2d/stones2DA3C1-18,0.dgibi-gran.txt
+data2d/stones2DA4C1-18,0.dgibi-gran.txt
+*.dgibi
+*.png
+scripts/data2d/stones2DA0C1-25,0.dgibi-gran.txt
+*.bin
