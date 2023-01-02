@@ -10,14 +10,30 @@ from time import sleep
 
 exit_event = threading.Event()
 
-def bg_thread(set):
-    for percent in set:
-        for agregado in range(0,5):
-            print(percent, agregado)
-            sleep(20)
 
+def bg_thread(set, curva_gan):
+
+    command = 'python3 scripts/gen_2d.py '
+    argument_head = '--percent '
+    argument_tail = ' --agreg '
+
+    check_event = True
+
+    while check_event:
+        for percent in set:
+            argument_head = '--percent '
+            percent_str = str(percent)
+            for agregado in range(curva_gan, 5):
+                command = 'python3 scripts/gen_2d.py '
+                print(percent, agregado)
+                agregado_str = str(agregado)
+                command = command + argument_head + percent_str + argument_tail + agregado_str
+                print(command)
+                sleep(2)
+                sub.run([command], shell=True)
         if exit_event.is_set():
-            break
+            check_event = False
+
 
     i = 100
     print(f'{i} iterations completed before exiting.')
@@ -42,6 +58,9 @@ def main():
     parser.add_argument(
         "--step", type=int, default=2, help="variacao de cada percentual"
     )
+    parser.add_argument(
+        "--gran", type=int, default=0, help="curva granulometrica de inicio"
+    )
 
     args = parser.parse_args()
 
@@ -51,10 +70,12 @@ def main():
 
     step_percent = args.step
 
+    curva_gan = args.gran
+
     set = (x * 0.01 for x in range(p0, pf, step_percent))
 
     signal.signal(signal.SIGINT, signal_handler)
-    th = threading.Thread(target=bg_thread(set))
+    th = threading.Thread(target=bg_thread(set, curva_gan))
     th.start()
     th.join()
 
