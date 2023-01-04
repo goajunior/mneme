@@ -2,7 +2,6 @@ import subprocess as sub
 import os
 import shutil
 import glob
-import random
 import signal
 import threading
 import argparse
@@ -13,7 +12,6 @@ exit_event = threading.Event()
 
 def bg_thread(set, curva_gan):
 
-    command = 'python3 scripts/gen_2d.py '
     argument_head = '--percent '
     argument_tail = ' --agreg '
 
@@ -21,7 +19,6 @@ def bg_thread(set, curva_gan):
 
     while check_event:
         for percent in set:
-            argument_head = '--percent '
             percent_str = str(percent)
             for agregado in range(curva_gan, 5):
                 command = 'python3 scripts/gen_2d.py '
@@ -35,8 +32,15 @@ def bg_thread(set, curva_gan):
             check_event = False
 
 
-    i = 100
-    print(f'{i} iterations completed before exiting.')
+def analise_termica():
+
+
+    for file in glob.glob('pre-termico/*.dgibi'):
+        dir_target = 'termico-mecanico/' + file[25:28] + file[21]
+        os.makedirs(dir_target)
+        command = 'python3 scripts/geraScriptTermico.py ' + '--file ' + file
+        sub.run([command], shell=True)
+        shutil.move('termico.py', dir_target)
 
 
 def signal_handler(signum, frame):
@@ -78,6 +82,12 @@ def main():
     th = threading.Thread(target=bg_thread(set, curva_gan))
     th.start()
     th.join()
+
+    if os.path.exists('termico'):
+        shutil.rmtree('termico')
+
+    analise_termica()
+
 
 if __name__ == "__main__":
     main()
