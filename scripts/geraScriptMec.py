@@ -7,7 +7,20 @@ This is a temporary script file.
 
 import numpy as np
 
-filename = "C:\\IC\\teste scripts\\40,0p\\stones2DA3C1-40,0-fit.dgibi"
+import argparse
+
+
+parser = argparse.ArgumentParser(usage=__doc__)
+
+# Definicao dos percentuais de varredura (geracao dos arquivos)
+
+parser.add_argument(
+    "--file", type=str, help="arquivo de entrada"
+)
+
+args = parser.parse_args()
+
+filename = args.file
 Diam = 50.0
 H = 100.0
 

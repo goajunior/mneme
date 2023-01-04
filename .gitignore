@@ -138,3 +138,7 @@ data2d/stones2DA4C1-18,0.dgibi-gran.txt
 scripts/data2d/stones2DA0C1-25,0.dgibi-gran.txt
 *.bin
 data2d/stones2DA0C1-18,0.dgibi-gran.txt
+mecanico.py
+termico/18,0/termico.py
+termico/18,3/termico.py
+termico/18,4/termico.py

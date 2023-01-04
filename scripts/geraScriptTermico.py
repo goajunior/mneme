@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(usage=__doc__)
 # Definicao dos percentuais de varredura (geracao dos arquivos)
 
 parser.add_argument(
-    "--file", type=string, help="arquivo de entrada"
+    "--file", type=str, help="arquivo de entrada"
 )
 
 args = parser.parse_args()
