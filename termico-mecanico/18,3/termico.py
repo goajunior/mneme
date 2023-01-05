@@ -1,0 +1,375 @@
+# -*- coding: utf-8 -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+import numpy as np
+import os
+#
+if os.path.isfile("termico.odb"):
+     os.remove("termico.odb")
+if os.path.isfile("termico.lck"):
+       os.remove("termico.lck")
+#
+#
+#
+#
+#
+#
+#
+os.system('C:\Temp\termico.*')
+temperaturas = [293.15, 573.15, 723.15, 873.15]
+#
+#
+#
+# DEFINE TIME PERIOD E INCREMENT SIZE
+#
+time_period573 = 560
+time_period723 = 300
+time_period873 = 300
+increment_size = 1
+max_inc = int(time_period573/increment_size + time_period723/increment_size + time_period873/increment_size)
+malha_agreg = 0.002*1e3
+malha_arg = 0.002*1e3
+#
+# DEFINE PROPRIEDADES DOS MATERIAIS
+#
+# obs: propriedades termicas nbr 15220
+#
+#
+#
+#
+param_argamass = {'Density': 2252.0*1e-9, 'Conductivity': 1.15*60*1e-3, 'SpecificHeat': 1000.0, 'Expansion': 3.67e-6}
+#
+param_agreg = {'Density': 2500.0*1e-9, 'Conductivity': 0.7*60*1e-3, 'SpecificHeat': 840.0, 'Expansion': 3.779e-6}
+#
+#
+#
+#
+# CRIA RETANGULO
+#
+mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=100.0)
+mdb.models['Model-1'].sketches['__profile__'].sketchOptions.setValues(
+    viewStyle=AXISYM)
+mdb.models['Model-1'].sketches['__profile__'].ConstructionLine(
+    point1=(0.0, 0.0), point2=(0.0, 1.0))
+mdb.models['Model-1'].sketches['__profile__'].FixedConstraint(
+    entity=mdb.models['Model-1'].sketches['__profile__'].geometry[2])
+mdb.models['Model-1'].sketches['__profile__'].rectangle(
+    point1=(0,0), point2=(50.0,100.0))
+mdb.models['Model-1'].Part(dimensionality=TWO_D_PLANAR,
+                           name='Part-1', type=DEFORMABLE_BODY)
+mdb.models['Model-1'].parts['Part-1'].BaseShell(
+    sketch=mdb.models['Model-1'].sketches['__profile__'])
+del mdb.models['Model-1'].sketches['__profile__']
+#
+# CRIA MATERIAIS E ATRIBUI AO RETANGULO
+#
+mdb.models['Model-1'].Material(name='Material-argamassa')
+mdb.models['Model-1'].materials['Material-argamassa'].Density(table=((param_argamass['Density'], ), ))
+mdb.models['Model-1'].materials['Material-argamassa'].Conductivity(table=((param_argamass['Conductivity'], ), ))
+mdb.models['Model-1'].materials['Material-argamassa'].SpecificHeat(table=((param_argamass['SpecificHeat'], ), ))
+mdb.models['Model-1'].materials['Material-argamassa'].Expansion(table=((param_argamass['Expansion'], ), ))
+mdb.models['Model-1'].materials['Material-argamassa'].expansion.setValues(zero=temperaturas[0])
+#
+mdb.models['Model-1'].Material(name='Material-agregado')
+mdb.models['Model-1'].materials['Material-agregado'].Density(table=((param_agreg['Density'], ), ))
+mdb.models['Model-1'].materials['Material-agregado'].Conductivity(table=((param_agreg['Conductivity'], ), ))
+mdb.models['Model-1'].materials['Material-agregado'].SpecificHeat(table=((param_agreg['SpecificHeat'], ), ))
+mdb.models['Model-1'].materials['Material-agregado'].Expansion(table=((param_agreg['Expansion'], ), ))
+mdb.models['Model-1'].materials['Material-agregado'].expansion.setValues(zero=temperaturas[0])
+#
+mdb.models['Model-1'].HomogeneousSolidSection(material='Material-argamassa',
+    name='Section-argamassa', thickness=None)
+mdb.models['Model-1'].HomogeneousSolidSection(material='Material-argamassa',
+    name='Section-ZTI', thickness=None)
+mdb.models['Model-1'].HomogeneousSolidSection(material='Material-agregado',
+    name='Section-agregado', thickness=None)
+mdb.models['Model-1'].parts['Part-1'].Set(faces=
+    mdb.models['Model-1'].parts['Part-1'].faces.findAt(((1.0, 1.0,
+   0.0), (0.0, 0.0, 1.0)), ), name='Set-1')
+mdb.models['Model-1'].parts['Part-1'].SectionAssignment(offset=0.0,
+    offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Model-1'].parts['Part-1'].sets['Set-1'], sectionName=
+    'Section-argamassa', thicknessAssignment=FROM_SECTION)
+mdb.models['Model-1'].ConstrainedSketch(gridSpacing=5.59, name='__profile__',
+     sheetSize=223.6, transform=
+     mdb.models['Model-1'].parts['Part-1'].MakeSketchTransform(
+     sketchPlane=mdb.models['Model-1'].parts['Part-1'].faces[0],
+     sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.0, 0.0, 0.0)))
+mdb.models['Model-1'].parts['Part-1'].projectReferencesOntoSketch(filter=
+     COPLANAR_EDGES,
+sketch=mdb.models['Model-1'].sketches['__profile__'])
+#
+mdb.models['Model-1'].parts['Part-1'].setElementType(elemTypes=(ElemType(elemCode=DC2D4, elemLibrary=STANDARD), ElemType(elemCode=DC2D3, elemLibrary=STANDARD, secondOrderAccuracy=OFF, distortionControl=DEFAULT)), regions=mdb.models['Model-1'].parts['Part-1'].sets['Set-1'])
+#
+# CRIANDO AS BOLINHAS
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(13.145101,29.663859), point1=(17.656536,29.663859))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(16.859073,46.490895), point1=(19.345243999999997,46.490895))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(21.365941,18.624898), point1=(24.025136,18.624898))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(39.929262,9.512228), point1=(43.034762,9.512228))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(37.522313,38.608462), point1=(41.839195,38.608462))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(39.074113,21.009758), point1=(43.827358999999994,21.009758))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(10.301299,40.687931), point1=(14.637369,40.687931))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(20.763038,2.998159), point1=(23.618518,2.998159))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(21.910835,73.237789), point1=(24.560876,73.237789))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(38.183779,57.938435), point1=(40.890426,57.938435))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(38.195341,47.946493), point1=(42.829287,47.946493))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(18.246382,57.835264), point1=(21.227058,57.835264))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(28.74562,26.383101), point1=(32.86875,26.383101))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(10.014955,7.625821), point1=(12.634941000000001,7.625821))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(31.049841,71.117891), point1=(34.173295,71.117891))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(41.229761,70.463014), point1=(43.953528000000006,70.463014))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(20.936651,79.715603), point1=(24.651145,79.715603))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(5.355659,51.523618), point1=(7.88555,51.523618))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(37.579077,94.902798), point1=(41.996443,94.902798))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(14.65453,65.033296), point1=(17.211379,65.033296))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(28.649538,36.722265), point1=(31.457863,36.722265))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(27.6576,96.10517), point1=(30.260051999999998,96.10517))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(17.153158,92.461577), point1=(20.001775000000002,92.461577))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(12.96566,72.258378), point1=(16.017779,72.258378))
+mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter(
+    center=(31.352842,90.157109), point1=(34.364447999999996,90.157109))
+#
+# ATRIBUINDO MATERIAL AS BOLINHAS
+#
+mdb.models['Model-1'].parts['Part-1'].PartitionFaceBySketch(faces=mdb.models['Model-1'].parts['Part-1'].faces.getSequenceFromMask(
+    ('[#1 ]', ), ), 	sketch=mdb.models['Model-1'].sketches['__profile__'])
+del mdb.models['Model-1'].sketches['__profile__']
+mdb.models['Model-1'].parts['Part-1'].Set(faces=mdb.models['Model-1'].parts['Part-1'].faces.findAt(
+    (( 13.145101 , 29.663859 ,    0.0),),
+    (( 16.859073 , 46.490895 ,    0.0),),
+    (( 21.365941 , 18.624898 ,    0.0),),
+    (( 39.929262 , 9.512228 ,    0.0),),
+    (( 37.522313 , 38.608462 ,    0.0),),
+    (( 39.074113 , 21.009758 ,    0.0),),
+    (( 10.301299 , 40.687931 ,    0.0),),
+    (( 20.763038 , 2.998159 ,    0.0),),
+    (( 21.910835 , 73.237789 ,    0.0),),
+    (( 38.183779 , 57.938435 ,    0.0),),
+    (( 38.195341 , 47.946493 ,    0.0),),
+    (( 18.246382 , 57.835264 ,    0.0),),
+    (( 28.74562 , 26.383101 ,    0.0),),
+    (( 10.014955 , 7.625821 ,    0.0),),
+    (( 31.049841 , 71.117891 ,    0.0),),
+    (( 41.229761 , 70.463014 ,    0.0),),
+    (( 20.936651 , 79.715603 ,    0.0),),
+    (( 5.355659 , 51.523618 ,    0.0),),
+    (( 37.579077 , 94.902798 ,    0.0),),
+    (( 14.65453 , 65.033296 ,    0.0),),
+    (( 28.649538 , 36.722265 ,    0.0),),
+    (( 27.6576 , 96.10517 ,    0.0),),
+    (( 17.153158 , 92.461577 ,    0.0),),
+    (( 12.96566 , 72.258378 ,    0.0),),
+    (( 31.352842 , 90.157109 ,    0.0),),
+ ),name='Set-3')
+mdb.models['Model-1'].parts['Part-1'].SectionAssignment(offset=0.0,
+    offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Model-1'].parts['Part-1'].sets['Set-3'], sectionName=
+    'Section-agregado', thicknessAssignment=FROM_SECTION)
+mdb.models['Model-1'].parts['Part-1'].setElementType(elemTypes=(ElemType(elemCode=DC2D4, elemLibrary=STANDARD), ElemType(elemCode=DC2D3, elemLibrary=STANDARD, secondOrderAccuracy=OFF, distortionControl=DEFAULT)), regions=mdb.models['Model-1'].parts['Part-1'].sets['Set-3'])
+#
+#CRIANDO MALHA
+#
+mdb.models['Model-1'].parts['Part-1'].setMeshControls(elemShape=TRI, regions=
+    mdb.models['Model-1'].parts['Part-1'].faces.findAt(
+    (( 13.145101 , 29.663859 ,    0.0),),
+    (( 16.859073 , 46.490895 ,    0.0),),
+    (( 21.365941 , 18.624898 ,    0.0),),
+    (( 39.929262 , 9.512228 ,    0.0),),
+    (( 37.522313 , 38.608462 ,    0.0),),
+    (( 39.074113 , 21.009758 ,    0.0),),
+    (( 10.301299 , 40.687931 ,    0.0),),
+    (( 20.763038 , 2.998159 ,    0.0),),
+    (( 21.910835 , 73.237789 ,    0.0),),
+    (( 38.183779 , 57.938435 ,    0.0),),
+    (( 38.195341 , 47.946493 ,    0.0),),
+    (( 18.246382 , 57.835264 ,    0.0),),
+    (( 28.74562 , 26.383101 ,    0.0),),
+    (( 10.014955 , 7.625821 ,    0.0),),
+    (( 31.049841 , 71.117891 ,    0.0),),
+    (( 41.229761 , 70.463014 ,    0.0),),
+    (( 20.936651 , 79.715603 ,    0.0),),
+    (( 5.355659 , 51.523618 ,    0.0),),
+    (( 37.579077 , 94.902798 ,    0.0),),
+    (( 14.65453 , 65.033296 ,    0.0),),
+    (( 28.649538 , 36.722265 ,    0.0),),
+    (( 27.6576 , 96.10517 ,    0.0),),
+    (( 17.153158 , 92.461577 ,    0.0),),
+    (( 12.96566 , 72.258378 ,    0.0),),
+    (( 31.352842 , 90.157109 ,    0.0),),
+))
+mdb.models['Model-1'].parts['Part-1'].seedPart(deviationFactor=0.1,
+    minSizeFactor=0.1, size=0.7)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 17.656536 , 29.663859 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 19.345243999999997 , 46.490895 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 24.025136 , 18.624898 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 43.034762 , 9.512228 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 41.839195 , 38.608462 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 43.827358999999994 , 21.009758 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 14.637369 , 40.687931 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 23.618518 , 2.998159 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 24.560876 , 73.237789 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 40.890426 , 57.938435 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 42.829287 , 47.946493 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 21.227058 , 57.835264 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 32.86875 , 26.383101 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 12.634941000000001 , 7.625821 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 34.173295 , 71.117891 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 43.953528000000006 , 70.463014 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 24.651145 , 79.715603 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 7.88555 , 51.523618 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 41.996443 , 94.902798 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 17.211379 , 65.033296 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 31.457863 , 36.722265 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 30.260051999999998 , 96.10517 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 20.001775000000002 , 92.461577 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 16.017779 , 72.258378 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeBySize(constraint=FINER,
+    deviationFactor=0.1, edges = mdb.models['Model-1'].parts['Part-1'].edges.findAt(
+        (( 34.364447999999996 , 90.157109 ,    0.0),),), minSizeFactor=0.1, size=0.5)
+mdb.models['Model-1'].parts['Part-1'].generateMesh()
+#
+# FAZ O ASSEMBLY, CRIANDO OS PONTOS DE CONTROLE E AS CONDIÇÕES DE CONTORNO
+#
+mdb.models['Model-1'].rootAssembly.DatumCsysByDefault(CARTESIAN)
+mdb.models['Model-1'].rootAssembly.Instance(
+    dependent=ON, name='Part-1-1', part=mdb.models['Model-1'].parts['Part-1'])
+mdb.models['Model-1'].rootAssembly.Set(
+    edges=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].edges.findAt(((0.0 , 50.0 , 0.0),), ), name='Lateral1')
+mdb.models['Model-1'].rootAssembly.Set(
+    edges=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].edges.findAt((( 50.0 , 50.0 , 0.0),), ), name='Lateral2')
+mdb.models['Model-1'].rootAssembly.Set(
+    edges=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].edges.findAt(((1*1e-3, 0.0, 0.0),), ), name='Base')
+mdb.models['Model-1'].rootAssembly.Set(
+    edges=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].edges.findAt(((1*1e-3 , 100.0 , 0.0),), ), name='Topo')
+#
+# mdb.models['Model-1'].rootAssembly.Set(vertices=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].vertices.findAt(((17.431429 , 57.588253, 0.0),), ), name='Ponto3')
+# mdb.models['Model-1'].rootAssembly.Set(vertices=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].vertices.findAt(((23.388278 , 95.099907, 0.0),), ), name='Ponto2')
+# mdb.models['Model-1'].rootAssembly.Set(vertices=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].vertices.findAt(((50.0, 100.0 , 0.0),), ), name='Ponto1')
+#
+# aplica temperatura inicial
+mdb.models['Model-1'].Temperature(createStepName='Initial', crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, distributionType=UNIFORM, magnitudes=temperaturas[0],
+  name='Temperatura Inicial', region=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'].sets['Set-1'])
+#
+#
+#
+#
+#
+#
+#
+#step1 - carga573
+mdb.models['Model-1'].HeatTransferStep(initialInc=increment_size, maxNumInc=max_inc, name='Carga573', previous='Initial', timeIncrementationMethod=FIXED, timePeriod=time_period573, amplitude=RAMP)
+mdb.models['Model-1'].TemperatureBC(amplitude=UNSET, createStepName='Carga573', distributionType=UNIFORM, fieldName='', fixed=OFF, magnitude=temperaturas[1], name='Temp-' + str(1), region=mdb.models['Model-1'].rootAssembly.sets['Lateral2'])
+mdb.models['Model-1'].TemperatureBC(amplitude=UNSET, createStepName='Carga573', distributionType=UNIFORM, fieldName='', fixed=OFF, magnitude=temperaturas[1], name='Temp-' + str(2), region=mdb.models['Model-1'].rootAssembly.sets['Topo'])
+#
+#
+#
+#step2 - carga723
+mdb.models['Model-1'].HeatTransferStep(initialInc=increment_size, maxNumInc=max_inc, name='Carga723', previous='Carga573', timeIncrementationMethod=FIXED, 
+    timePeriod=time_period723, amplitude=RAMP)
+mdb.models['Model-1'].boundaryConditions['Temp-' + str(1)].setValuesInStep(magnitude=temperaturas[2], stepName='Carga723')
+mdb.models['Model-1'].boundaryConditions['Temp-' + str(2)].setValuesInStep(magnitude=temperaturas[2], stepName='Carga723')	
+#
+#step3 - carga873
+mdb.models['Model-1'].HeatTransferStep(initialInc=increment_size, maxNumInc=max_inc, name='Carga873', previous='Carga723', timeIncrementationMethod=FIXED, 
+    timePeriod=time_period873, amplitude=RAMP)
+mdb.models['Model-1'].boundaryConditions['Temp-' + str(1)].setValuesInStep(magnitude=temperaturas[3], stepName='Carga873')
+mdb.models['Model-1'].boundaryConditions['Temp-' + str(2)].setValuesInStep(magnitude=temperaturas[3], stepName='Carga873')
+#
+# CRIA O JOB
+#
+mdb.models['Model-1'].fieldOutputRequests['F-Output-1'].setValues(frequency = LAST_INCREMENT, variables=('NT', 'TEMP'))
+
+#
+myJob = mdb.Job(atTime=None, contactPrint=OFF, description='', echoPrint=OFF, explicitPrecision=SINGLE, getMemoryFromAnalysis=True, historyPrint=OFF, memory=90, 
+                	memoryUnits=PERCENTAGE, model='Model-1', modelPrint=OFF, multiprocessingMode=DEFAULT, name='termico', nodalOutputPrecision=SINGLE, numCpus=1, 
+                	queue=None, scratch='', type=ANALYSIS, userSubroutine='', waitHours=0, waitMinutes=0)
+#
+#SUBMETE O JOB PARA ANÁLISE
+#
+myJob.submit()
+myJob.waitForCompletion()
+odbName = 'termico.odb'
+odb = openOdb(path=odbName)

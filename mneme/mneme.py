@@ -32,15 +32,22 @@ def bg_thread(set, curva_gan):
             check_event = False
 
 
-def analise_termica():
+def gera_script(script_file):
 
 
     for file in glob.glob('pre-termico/*.dgibi'):
         dir_target = 'termico-mecanico/' + file[25:28] + file[21]
-        os.makedirs(dir_target)
-        command = 'python3 scripts/geraScriptTermico.py ' + '--file ' + file
+
+        if os.path.exists(dir_target) == False:
+            os.makedirs(dir_target)
+
+        command = 'python3 scripts/' + script_file + '.py ' + '--file ' + file
         sub.run([command], shell=True)
-        shutil.move('termico.py', dir_target)
+
+        if os.path.exists('termico.py'):
+            shutil.move('termico.py', dir_target)
+        elif os.path.exists('mecanico.py'):
+            shutil.move('mecanico.py', dir_target)
 
 
 def signal_handler(signum, frame):
@@ -54,10 +61,10 @@ def main():
     # Definicao dos percentuais de varredura (geracao dos arquivos)
 
     parser.add_argument(
-        "--p0", type=float, default=0.10, help="percentual inicial de agregados"
+        "--p0", type=float, default=0.10, help="percentual inicial de agregados (<1)"
     )
     parser.add_argument(
-        "--pf", type=float, default=0.50, help="percentual final de agregados"
+        "--pf", type=float, default=0.50, help="percentual final de agregados (<1)"
     )
     parser.add_argument(
         "--step", type=int, default=2, help="variacao de cada percentual"
@@ -83,10 +90,11 @@ def main():
     th.start()
     th.join()
 
-    if os.path.exists('termico'):
-        shutil.rmtree('termico')
+    if os.path.exists('termico-mecanico'):
+        shutil.rmtree('termico-mecanico')
 
-    analise_termica()
+    gera_script('geraScriptTermico')
+    gera_script('geraScriptMec')
 
 
 if __name__ == "__main__":
