@@ -11,7 +11,12 @@ exit_event = threading.Event()
 
 
 def bg_thread(set, curva_gan):
+    """funcao que gera a thread que pode ser abortada com control-c
 
+    Args:
+        set (lista): lista dos percentuais a serem passados para o script gen_2d
+        curva_gan (inteiro): curva granulometrica de inicio
+    """
     argument_head = '--percent '
     argument_tail = ' --agreg '
 
@@ -26,19 +31,22 @@ def bg_thread(set, curva_gan):
                 agregado_str = str(agregado)
                 command = command + argument_head + percent_str + argument_tail + agregado_str
                 print(command)
-                sleep(2)
+                sleep(1)
                 sub.run([command], shell=True)
         if exit_event.is_set():
-            check_event = False
+            check_event = False #ao abortar, uma nova porcentagem em set eh selecionada
 
 
 def gera_script(script_file):
+    """Gera os scripts termico e mecanico
 
-
+    Args:
+        script_file (): tipo de script a ser gerado
+    """
     for file in glob.glob('pre-termico/*.dgibi'):
         dir_target = 'termico-mecanico/' + file[25:28] + file[21]
 
-        if os.path.exists(dir_target) == False:
+        if os.path.exists(dir_target) is False:
             os.makedirs(dir_target)
 
         command = 'python3 scripts/' + script_file + '.py ' + '--file ' + file
@@ -75,9 +83,15 @@ def main():
 
     args = parser.parse_args()
 
-    p0 = int(args.p0 * 100)
+    if args.p0 < 1:
+        p0 = int(args.p0 * 100)
+    else:
+        p0 = int(args.p0)
 
-    pf = int(args.pf * 100)
+    if args.pf < 1:
+        pf = int(args.pf * 100)
+    else:
+        pf = int(args.pf)
 
     step_percent = args.step
 
