@@ -44,7 +44,7 @@ def gera_script(script_file):
         script_file (): tipo de script a ser gerado
     """
     for file in glob.glob('pre-termico/*.dgibi'):
-        dir_target = 'termico-mecanico/' + file[25:28] + file[21]
+        dir_target = 'termico-mecanico/' + file[25:27]  + '.' + file[21]
 
         if os.path.exists(dir_target) is False:
             os.makedirs(dir_target)
