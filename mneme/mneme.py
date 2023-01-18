@@ -80,35 +80,45 @@ def main():
     parser.add_argument(
         "--gran", type=int, default=0, help="curva granulometrica de inicio"
     )
+    parser.add_argument(
+        "--term", action="store_true", help="pos processamento termico"
+    )
+    parser.add_argument(
+        "--mec", action="store_true", help="pos processamento mecanico"
+    )
 
     args = parser.parse_args()
 
-    if args.p0 < 1:
-        p0 = int(args.p0 * 100)
-    else:
-        p0 = int(args.p0)
+    if (not args.term) and (not args.mec):
+        if args.p0 < 1:
+            p0 = int(args.p0 * 100)
+        else:
+            p0 = int(args.p0)
 
-    if args.pf < 1:
-        pf = int(args.pf * 100)
-    else:
-        pf = int(args.pf)
+        if args.pf < 1:
+            pf = int(args.pf * 100)
+        else:
+            pf = int(args.pf)
 
-    step_percent = args.step
+        step_percent = args.step
 
-    curva_gan = args.gran
+        curva_gan = args.gran
 
-    set = (x * 0.01 for x in range(p0, pf, step_percent))
+        set = (x * 0.01 for x in range(p0, pf, step_percent))
 
-    signal.signal(signal.SIGINT, signal_handler)
-    th = threading.Thread(target=bg_thread(set, curva_gan))
-    th.start()
-    th.join()
+        signal.signal(signal.SIGINT, signal_handler)
+        th = threading.Thread(target=bg_thread(set, curva_gan))
+        th.start()
+        th.join()
 
-    if os.path.exists('termico-mecanico'):
-        shutil.rmtree('termico-mecanico')
+        if os.path.exists('termico-mecanico'):
+            shutil.rmtree('termico-mecanico')
 
-    gera_script('geraScriptTermico')
-    gera_script('geraScriptMec')
+        gera_script('geraScriptTermico')
+        gera_script('geraScriptMec')
+
+    elif args.term:
+        print("termico")
 
 
 if __name__ == "__main__":
