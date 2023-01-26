@@ -34,7 +34,7 @@ def bg_thread(set, curva_gan):
                 sleep(1)
                 sub.run([command], shell=True)
         if exit_event.is_set():
-            check_event = False #ao abortar, uma nova porcentagem em set eh selecionada
+            check_event = False  # ao abortar, uma nova porcentagem em set eh selecionada
 
 
 def gera_script(script_file):
@@ -44,7 +44,7 @@ def gera_script(script_file):
         script_file (): tipo de script a ser gerado
     """
     for file in glob.glob('pre-termico/*.dgibi'):
-        dir_target = 'termico-mecanico/' + file[25:27]  + '.' + file[21]
+        dir_target = 'termico-mecanico/' + file[25:27] + '.' + file[21]
 
         if os.path.exists(dir_target) is False:
             os.makedirs(dir_target)
