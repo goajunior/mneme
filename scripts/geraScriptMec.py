@@ -58,10 +58,10 @@ texto25 = '    os.remove("curva_referencia.txt")'
 texto26 = 'if os.path.isfile("rms_erro.txt"):'
 texto27 = '    os.remove("rms_erro.txt")'
 texto28 = '#'
-texto29 = "os.system('C:\\IC\\Teste 2022\\mecanico.odb')"
+texto29 = '#'
 texto30 = 'temperaturas = [293.15, 473.15, 673.15, 1073.15]'
-texto31 = "umat_path = ('C:\\IC\\bi\\subrotina_umat.for')"
-texto32 = "odb = ('C:\\IC\\Teste 2022\\termico.odb')"
+texto31 = "umat_path = ('..\\..\\scripts\\subrotina_umat.for')"
+texto32 = "odb = ('termico.odb')"
 texto33 = '# command line'
 texto34 = '# abq611pr3 cae noGUI=script.py -- 0.95 10000.0 1.0 3000.0 0.00001 1.0'
 texto35 = '#'

@@ -50,18 +50,18 @@ texto18 = 'if os.path.isfile("termico.odb"):'
 texto19 = '     os.remove("termico.odb")'
 texto20 = 'if os.path.isfile("termico.lck"):'
 texto21 = '       os.remove("termico.lck")'
-texto22= '#'
-texto23= '#'
-texto24= '#'
-texto25= '#'
-texto26= '#'
-texto27= '#'
+texto22 = '#'
+texto23 = '#'
+texto24 = '#'
+texto25 = '#'
+texto26 = '#'
+texto27 = '#'
 texto28 = '#'
-texto29 = "os.system('C:\\Temp\\termico.*')"
+texto29 = '#'
 texto30 = 'temperaturas = [293.15, 573.15, 723.15, 873.15]'
-texto31= '#'
-texto32= '#'
-texto33= '#'
+texto31 = '#'
+texto32 = '#'
+texto33 = '#'
 texto34 = '# DEFINE TIME PERIOD E INCREMENT SIZE'
 texto35 = '#'
 texto36 = 'time_period573 = 560'
@@ -75,14 +75,14 @@ texto43 = '#'
 texto44 = '# DEFINE PROPRIEDADES DOS MATERIAIS'
 texto45 = '#'
 texto46 = '# obs: propriedades termicas nbr 15220'
-texto47= '#'
-texto48= '#'
-texto49= '#'
-texto50= '#'
+texto47 = '#'
+texto48 = '#'
+texto49 = '#'
+texto50 = '#'
 texto51 = "param_argamass = {'Density': 2252.0*1e-9, 'Conductivity': 1.15*60*1e-3, 'SpecificHeat': 1000.0, 'Expansion': 3.67e-6}"
-texto52= '#'
+texto52 = '#'
 texto53 = "param_agreg = {'Density': 2500.0*1e-9, 'Conductivity': 0.7*60*1e-3, 'SpecificHeat': 840.0, 'Expansion': 3.779e-6}"
-texto54= '#'
+texto54 = '#'
 texto55 = "#"
 texto56 = "#"
 texto57 = "#"
@@ -155,13 +155,13 @@ xx = G[:, 0] + R
 yy = G[:, 1] + R
 
 n = len(R)
-i=116
+i = 116
 
 for k in range(0, n):
     globals()['texto'+str(i)] = "mdb.models['Model-1'].sketches['__profile__'].CircleByCenterPerimeter("
-    i=i+1
+    i = i + 1
     globals()['texto'+str(i)] = "    center=("+str(G[k, 0])+","+str(G[k, 1])+"), point1=("+str(xx[k])+","+str(G[k, 1])+"))"
-    i=i+1
+    i = i + 1
 
 textFile = open("termico.py", "w")
 for j in range(1, i):
@@ -179,7 +179,7 @@ texto_a_7 = "mdb.models['Model-1'].parts['Part-1'].Set(faces=mdb.models['Model-1
 q = 1
 a = 1
 p = 1
-i=8
+i = 8
 
 for k in range(0, n):
     if (q <= 254):
