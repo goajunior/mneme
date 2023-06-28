@@ -119,6 +119,21 @@ def main():
 
     elif args.term:
         print("termico")
+        current_dir = os.getcwd()
+
+        for dir in glob.glob('termico-mecanico/*'):
+            path = current_dir + '/' + dir
+            os.chdir(path)
+            sub.run('abq2018 cae noGUI=termico.py')
+
+    elif args.mec:
+        print("mecanico")
+        current_dir = os.getcwd()
+
+        for dir in glob.glob('termico-mecanico/*'):
+            path = current_dir + '/' + dir
+            os.chdir(path)
+            sub.run('abq2018 cae noGUI=mecanico.py')
 
 
 if __name__ == "__main__":
