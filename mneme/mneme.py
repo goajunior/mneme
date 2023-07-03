@@ -124,7 +124,7 @@ def main():
         for dir in glob.glob('termico-mecanico/*'):
             path = current_dir + '/' + dir
             os.chdir(path)
-            sub.run('abq2018 cae noGUI=termico.py')
+            sub.run('abq2018 cae noGUI=termico.py', shell=True)
 
     elif args.mec:
         print("mecanico")
@@ -133,7 +133,7 @@ def main():
         for dir in glob.glob('termico-mecanico/*'):
             path = current_dir + '/' + dir
             os.chdir(path)
-            sub.run('abq2018 cae noGUI=mecanico.py')
+            sub.run('abq2018 cae noGUI=mecanico.py', shell=True)
 
 
 if __name__ == "__main__":
